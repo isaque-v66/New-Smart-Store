@@ -5,6 +5,7 @@ import { Eye, EyeOff, UserPlus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { RegisterFormType, RegisterSchema } from "../types/registerTypes"
+import toast from "react-hot-toast"
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -16,11 +17,44 @@ export function RegisterForm() {
 
 
 
-  function sendRegister(data: RegisterFormType) {
-      const {name, email, password, confirmPassword} = data
+  async function sendRegister(data: RegisterFormType) {
+      const {name, email, password} = data
 
-      console.log("FOrmulário válido")
+      try {
+        const response = await fetch('', {
+          method: "POST",
+          headers: {"Content-type":"application/json"},
+          body: JSON.stringify({
+            name, email, password
+          })
+        })
 
+        const result = await response.json()
+  
+        if(!response.ok) {
+          if(response.status === 409) {
+             setError("email", {
+              type: "server",
+              message: "Este e-mail já está cadastrado"
+             })
+            }
+          toast.error(result.message || "Não foi possível criar a conta")
+          return
+        }
+
+
+        toast.success("Conta criada com sucesso!")
+
+
+      } catch(err) {
+        console.error(err)
+
+        toast.error("Não foi possível se comunicar com o banco de dados. Tente novamente")
+
+      }
+      
+
+      
      
   }
 
@@ -64,7 +98,7 @@ export function RegisterForm() {
         />
 
         {errors.name && (
-          <p className="text-red-500 font-medium">{errors.name.message}</p>
+          <p className="text-red-500 font-medium text-sm">{errors.name.message}</p>
         )}
       </div>
 
@@ -100,7 +134,7 @@ export function RegisterForm() {
 
         
         {errors.email && (
-          <p className="text-red-500 font-medium">{errors.email.message}</p>
+          <p className="text-red-500 font-medium text-sm">{errors.email.message}</p>
         )}
       </div>
 
@@ -157,7 +191,7 @@ export function RegisterForm() {
 
         
         {errors.password && (
-          <p className="text-red-500 font-medium">{errors.password.message}</p>
+          <p className="text-red-500 font-medium text-sm">{errors.password.message}</p>
         )}
       </div>
 
@@ -219,7 +253,7 @@ export function RegisterForm() {
         </div>
         
         {errors.confirmPassword && (
-          <p className="text-red-500 font-medium">{errors.confirmPassword.message}</p>
+          <p className="text-red-500 font-medium text-sm">{errors.confirmPassword.message}</p>
         )}
       </div>
 
