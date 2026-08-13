@@ -10,7 +10,7 @@ import toast from "react-hot-toast"
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const {register, handleSubmit, setError, formState: {errors}} = useForm<RegisterFormType>({
+  const {register, handleSubmit, setError, reset, formState: {errors, isSubmitting}} = useForm<RegisterFormType>({
     resolver: zodResolver(RegisterSchema)
   })
 
@@ -21,7 +21,7 @@ export function RegisterForm() {
       const {name, email, password} = data
 
       try {
-        const response = await fetch('', {
+        const response = await fetch('http://localhost:3333/register', {
           method: "POST",
           headers: {"Content-type":"application/json"},
           body: JSON.stringify({
@@ -37,6 +37,8 @@ export function RegisterForm() {
               type: "server",
               message: "Este e-mail já está cadastrado"
              })
+
+             return
             }
           toast.error(result.message || "Não foi possível criar a conta")
           return
@@ -44,12 +46,17 @@ export function RegisterForm() {
 
 
         toast.success("Conta criada com sucesso!")
-
+        reset({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        })
 
       } catch(err) {
         console.error(err)
 
-        toast.error("Não foi possível se comunicar com o banco de dados. Tente novamente")
+        toast.error("Não foi possível se comunicar com o servidor. Tente novamente")
 
       }
       
@@ -260,6 +267,7 @@ export function RegisterForm() {
       {/* Botão */}
       <button
         type="submit"
+        disabled={isSubmitting}
         className="
           mt-1
           flex h-11 w-full
@@ -276,8 +284,19 @@ export function RegisterForm() {
           disabled:opacity-50
         "
       >
-        <UserPlus className="size-4" />
-        Criar conta
+
+        {isSubmitting ? (
+          <>
+            <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Criando conta...
+          </>
+        ): (
+          <>
+            <UserPlus className="size-4" />
+            Criar conta
+          </>
+        )}
+
       </button>
     </form>
   )

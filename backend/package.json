@@ -14,8 +14,12 @@
   "type": "module",
   "description": "",
   "dependencies": {
+    "@fastify/cors": "^11.3.0",
     "@prisma/client": "^6.18.0",
-    "fastify": "^5.11.3"
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
+    "fastify": "^5.11.3",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
