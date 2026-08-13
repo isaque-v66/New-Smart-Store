@@ -1,4 +1,5 @@
-import type { RegisterRepository } from "../../domain/repository/registerRepository.js";
+
+import type { AuthRepository } from "../../domain/repository/registerRepository.js";
 import { ApiErrors } from "../../shared/errors/apiErrors.js";
 import type { RegisterDTO } from "../dto/registerDTO.js";
 import bcrypt from "bcrypt"
@@ -7,7 +8,7 @@ import bcrypt from "bcrypt"
 
 export class RegisterUseCase {
 
-    constructor(private repository: RegisterRepository){}
+    constructor(private repository: AuthRepository){}
 
 
     async execute(data: RegisterDTO) {

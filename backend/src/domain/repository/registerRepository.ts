@@ -1,7 +1,7 @@
 import type { User } from "@prisma/client";
 
 
-export interface RegisterRepository {
+export interface AuthRepository {
 
     create(data: {name: string, email: string, password: string}): Promise<User>
 

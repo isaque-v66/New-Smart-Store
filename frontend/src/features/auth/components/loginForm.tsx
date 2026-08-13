@@ -6,20 +6,50 @@ import { useState } from "react"
 import { Eye, EyeOff } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LoginSchema } from "../types/loginType"
+import { LoginFormType, LoginSchema } from "../types/loginType"
+import toast from "react-hot-toast"
+import { useAuth } from "../context/auth-context"
 
 export function LoginForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
-  const {register, handleSubmit } = useForm({
+  const {register, handleSubmit, formState: {errors, isSubmitting} } = useForm({
     resolver: zodResolver(LoginSchema)
   })
+  const {refreshUser} = useAuth()
 
 
 
 
 
-  function sendLoginForm() {
+  async function sendLoginForm(data: LoginFormType) {
+      const {email, password} = data
+
+      try {
+
+        const response = await fetch("/login", {
+          method: "POST",
+          headers: {"Content-type":"application/json"},
+          credentials: "include",
+          body: JSON.stringify({email, password})
+        })
+
+        const res = await response.json()
+
+        if(!response.ok) {
+          toast.error(res.message || "Erro no servidor")
+          return
+        }
+
+        await refreshUser()
+        router.replace("/dashboard")
+
+      } catch(err) {
+        console.error(err)
+        
+        toast.error("Erro ao se comunicar com o servidor")
+
+      }
     
   }
 
@@ -38,6 +68,9 @@ export function LoginForm() {
           placeholder="you@example.com"
           className="h-11 w-full rounded-lg border border-black/10 bg-white px-3.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-[#1c1917] focus-visible:ring-3 focus-visible:ring-[#1c1917]/10"
         />
+         {errors && (
+              <p className="text-sm text-red-600">{errors.email?.message}</p>
+            )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -56,6 +89,10 @@ export function LoginForm() {
             placeholder="Enter your password"
             className="h-11 w-full rounded-lg border border-black/10 bg-white px-3.5 pr-10 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-[#1c1917] focus-visible:ring-3 focus-visible:ring-[#1c1917]/10"
           />
+            {errors && (
+              <p className="text-sm text-red-600">{errors.password?.message}</p>
+            )}
+
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
@@ -69,9 +106,15 @@ export function LoginForm() {
 
       <button
         type="submit"
+        disabled={isSubmitting}
         className="h-11 w-full rounded-lg bg-[#1c1917] text-sm font-medium text-white transition-colors hover:bg-[#1c1917]/90"
       >
-        Entre
+        {isSubmitting ? (<>
+             <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Criando conta...
+        </>):(<>
+          Entre
+        </>)}
       </button>
 
       <p className="text-center text-sm text-muted-foreground">
