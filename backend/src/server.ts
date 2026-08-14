@@ -6,6 +6,7 @@ import cookie from "@fastify/cookie"
 import type { LoginDTOType } from "./application/dto/loginDTO.js";
 import jwt from "jsonwebtoken"
 import { authenticate } from "./shared/hooks/authenticate.js";
+import { ApiErrors } from "./shared/errors/apiErrors.js";
 
 
 export const app = fastify({
@@ -81,7 +82,16 @@ app.post("/login", async(request, reply) => {
 
     } catch(err) {
         console.error(err)
-        return reply
+        
+        if (err instanceof ApiErrors) {
+        return reply.status(401).send({
+          message: err.message,
+        });
+      }
+
+      return reply.status(500).send({
+        message: "Erro interno do servidor",
+      });
 
     }
 })
@@ -118,3 +128,17 @@ app.get("/me", {preHandler: authenticate}, async (request, reply) => {
 
 
 
+
+const start = async () => {
+
+    await app.listen({
+        port: 3333,
+        host: "0.0.0.0"
+    })
+
+    console.log("servidor rodando na porta 3333")
+}
+
+
+
+start()

@@ -27,7 +27,7 @@ export function LoginForm() {
 
       try {
 
-        const response = await fetch("/login", {
+        const response = await fetch("http://localhost:3333/login", {
           method: "POST",
           headers: {"Content-type":"application/json"},
           credentials: "include",
@@ -111,7 +111,7 @@ export function LoginForm() {
       >
         {isSubmitting ? (<>
              <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              Criando conta...
+              Entrando...
         </>):(<>
           Entre
         </>)}

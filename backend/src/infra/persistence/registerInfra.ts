@@ -1,10 +1,11 @@
 import type { User } from "@prisma/client";
-import type { RegisterRepository } from "../../domain/repository/registerRepository.js";
+
 import { prisma } from "../../shared/prisma/client.js";
+import type { AuthRepository } from "../../domain/repository/registerRepository.js";
 
 
 
-export class RegisterInfra implements RegisterRepository {
+export class RegisterInfra implements AuthRepository {
 
 
     create(data: { name: string; email: string; password: string; }): Promise<User> {

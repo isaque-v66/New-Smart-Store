@@ -14,21 +14,20 @@ export class LoginUseCase {
     async execute(data: LoginDTOType) {
         const {email, password} = data
 
-        try {
-            const emailExists = await this.repository.findByEmail(email)
+        const emailExists = await this.repository.findByEmail(email)
 
-            if(!emailExists) {
-                throw new ApiErrors("Email não encontrado")
+        if(!emailExists) {
+                throw new ApiErrors("Email ou senha incorreto")
             }
 
-            const isPasswordValid = await bcrypt.compare(password, emailExists.password)
+        const isPasswordValid = await bcrypt.compare(password, emailExists.password)
 
-            if(!isPasswordValid) {
-                throw new ApiErrors("Senha incorreta")
+        if(!isPasswordValid) {
+                throw new ApiErrors("Email ou senha incorreto")
             }
 
 
-            const token = jwt.sign({
+        const token = jwt.sign({
                 id: emailExists.id,
                 email: emailExists.email
             },
@@ -47,10 +46,7 @@ export class LoginUseCase {
 
 
 
-        } catch(err) {
-            console.error(err)
-            throw new ApiErrors("Erro no servidor ao realizar o login")
-        }
+       
 
     }
 
