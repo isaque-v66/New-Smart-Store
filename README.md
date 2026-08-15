@@ -28,6 +28,7 @@ O projeto é dividido entre **frontend** e **backend**, permitindo uma separaç�
 * PostgreSQL
 * JWT
 * Clean Architecture
+* Cloudinary
 
 ## 📁 Estrutura do projeto
 
@@ -137,7 +138,7 @@ Concentra os casos de uso da aplicação e a execução das regras de negócio.
 
 **Infrastructure**
 
-Responsável pelas implementações relacionadas a recursos externos, como persistência de dados utilizando Prisma.
+Responsável pelas implementações relacionadas a recursos externos, como persistência de dados utilizando Prisma e integração com serviços externos.
 
 **Presentation**
 
@@ -146,6 +147,51 @@ Responsável pela comunicação com o cliente, incluindo controllers e definiç�
 **Shared**
 
 Contém recursos compartilhados entre diferentes partes do backend, como tratamento de erros, hooks e configuração do Prisma.
+
+---
+
+## 🖼️ Gerenciamento de imagens
+
+O gerenciamento das imagens dos produtos é realizado através do **Cloudinary**.
+
+As imagens são armazenadas no Cloudinary, enquanto o banco de dados mantém a **URL da imagem** associada ao respectivo produto.
+
+O fluxo funciona da seguinte maneira:
+
+```text
+Frontend
+   │
+   │ Upload da imagem
+   ▼
+Backend / Fastify
+   │
+   │ Upload
+   ▼
+Cloudinary
+   │
+   │ URL da imagem
+   ▼
+Backend
+   │
+   │ Salva a URL
+   ▼
+PostgreSQL
+   │
+   │ URL armazenada
+   ▼
+Frontend
+   │
+   │ Recupera URL
+   ▼
+Cloudinary
+   │
+   ▼
+Imagem do produto
+```
+
+Dessa forma, o banco de dados não precisa armazenar os arquivos de imagem. Ele mantém apenas a referência necessária para acessar cada imagem no Cloudinary.
+
+Essa abordagem permite separar a **persistência dos dados da aplicação** do **armazenamento e distribuição dos arquivos de mídia**, tornando o gerenciamento das imagens mais adequado para uma aplicação de e-commerce.
 
 ---
 
@@ -218,6 +264,8 @@ domain/
 
 Isso reduz o acoplamento entre as regras de negócio e a tecnologia utilizada para acesso ao banco de dados.
 
+As informações dos produtos são armazenadas no PostgreSQL, incluindo as URLs das imagens hospedadas no Cloudinary.
+
 ---
 
 ## 🚀 Executando o projeto
@@ -282,6 +330,8 @@ O projeto tem como foco a construção de uma plataforma de **e-commerce**, perm
 * Autenticação
 * Gerenciamento de produtos
 * Catálogo de produtos
+* Upload e gerenciamento de imagens através do Cloudinary
+* Armazenamento das URLs das imagens no banco de dados
 * Dashboard administrativo
 * Gerenciamento de dados da loja
 * Carrinho de compras
@@ -346,8 +396,9 @@ O projeto busca aplicar boas práticas de desenvolvimento de software em uma apl
 * Segurança na autenticação
 * Centralização de erros
 * Gerenciamento eficiente de dados
+* Gerenciamento externo de imagens
 * Código escalável e manutenível
 * Separação entre frontend e backend
 * Organização baseada em funcionalidades
+* Integração com serviços externos
 * Desenvolvimento de uma plataforma de e-commerce completa
-
